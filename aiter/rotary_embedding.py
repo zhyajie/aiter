@@ -1151,6 +1151,9 @@ class AiterFusedSetKVBufferArg:
     k_scale: float
     v_scale: float
     return_kv: bool = False  # Whether to return k_out and v_out
+    use_shuffle_layout: bool = False  # Whether to use shuffle layout for KV cache
+    block_size: int = 0  # Block size for shuffle layout
+    x: int = 0  # x parameter for shuffle layout (16 // element_size)
 
 class RotaryEmbeddingFusedQKNorm(nn.Module):
     """Rotary Embedding with QKNorm fused"""
@@ -1247,6 +1250,9 @@ class RotaryEmbeddingFusedQKNorm(nn.Module):
                 k_out,
                 v_out,
                 return_kv,
+                fused_set_kv_buffer_arg.use_shuffle_layout,
+                fused_set_kv_buffer_arg.block_size,
+                fused_set_kv_buffer_arg.x,
             )
             if return_kv:
                 return q_out, k_out, v_out
@@ -1377,6 +1383,9 @@ class MRotaryEmbeddingQKNormFused(RotaryEmbeddingFusedQKNorm):
                 k_out,
                 v_out,
                 return_kv,
+                fused_set_kv_buffer_arg.use_shuffle_layout,
+                fused_set_kv_buffer_arg.block_size,
+                fused_set_kv_buffer_arg.x,
             )
             if return_kv:
                 return q_out, k_out, v_out
